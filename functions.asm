@@ -1,19 +1,16 @@
 .model small ; Set memory
 .stack	100h ; Set stack size
 .data ; Data segment
+  elemFetch db 0Ah, 0Dh, "Please enter a value: ", '$'
   arr dw 5 dup(?)
   arrLen dw 5
-	msg1 db "Enter 5 values into an array.", 0Ah, 0Dh, '$'
-  msg2 db 0Ah, 0Dh, "Enter a value: ", '$'
-  msg3 db 0Ah, 0Dh, 0Ah, 0Dh, "The array is: ", '$'
-  lrgStart db 0Ah, 0Dh, "The largest value in the array is ", '$'
-  smlStart db 0Ah, 0Dh, "The smallest value in the array is ", '$'
-  index db " and is located at index ", '$'
+  input db 6 dup(?)
 .code ; Code segment
 
 extrn outdec: proc ; Prints a decimal value in AX as a signed integer, returns nothing
 extrn indec: proc ; Gets a signed decimal value from the user, stores in AX
 
+;; Clears the screen
 clrScr macro
 
   push ax ; Saving ax
@@ -22,6 +19,7 @@ clrScr macro
   pop ax ; Restoring ax
 endm
 
+;; Gets one char from user, puts it in ax
 getChar macro
 
   ; Main
@@ -61,6 +59,7 @@ prtStr macro str
   pop ax ; Return state of ax
 endm
 
+;; Simply prints a comma and then a space, useful for array formatting
 prtComma macro
 
   ; Prologue
@@ -127,6 +126,73 @@ printNum proc
     jmp epilogue
 printNum endp
 
+;; Takes no arguments, gets buffered string from user defined in input, saves to input.
+;; Returns ax with that string interpreted as decimal integer
+getInputNum proc
+  push bp
+  mov bp, sp
+  push dx
+  push si
+  ; Main
+  mov ah, 0ah ; Interrupt handler for buffered input
+  mov dx, offset input ; Moves memory address to buffer to hold input for interrupt
+  int 21h ; Takes input from user
+  mov si, offset input ; Moves SI to input buffer to pass to string2number
+  call string2number ; Converts taken string to integer
+  ; Epilogue
+  pop si
+  pop dx
+  mov sp, bp
+  pop bp
+  ret
+getInputNum endp
+
+;; Takes input of offset of filled buffer in SI, outputs number stored in ax
+proc string2number
+; Prologue
+push bp
+mov bp, sp
+push bp
+push cx
+push bx
+; Main preparation
+inc  si ; Moves offset to the number of characters entered
+mov  cl, [si] ; Moves number of characters entered into cl
+xor ch, ch ; Clear CH, cx = cl = number of characters
+add  si, cx ; Move offset by number of characters, si points to least significant bit
+xor  bx, bx ; Clear bx
+mov  bp, 1 ; Digit place value.
+; Start converting string.
+repeat:
+    push cx ; Loop counter, holds number of characters with times looped subtracted
+    ;Convert character.
+    mov  al, [si] ; Move current character into al.
+    sub  al, 48 ; Convert digit to ascii.
+    mov  ah, 0 ; Clear ah, ax = al = current character.
+    xor dx, dx ; Clears dx so 00:ax points to ax
+    mul  bp ; ax multiplied by current place value -> dx:ax
+    add  bx, ax ; Add result to bx
+    ; Multiply place value by 10 in bp
+    mov ax, bp ; Duplicate initial place value
+    mov cl, 3 ; cl needs to hold shift value
+    shl bp, cl ; Shift 3 (Multiply by 8)
+    shl ax, 1 ; Shift ax 1 (Multiply by 2)
+    add bp, ax ; Add bp*8 + bp*2 = bp * 10
+    ; Loop ending
+    dec  si ; Move pointer to next-highest digit
+    pop cx ; Restore cx from beginning of loop
+    loop repeat ; Decrements cx (Which holds number of characters), then loops unless cx is 0.
+  ; Epilogue
+  mov ax, bx ; Preparing return value
+  ; Restoring memory
+  pop bx
+  pop cx
+  pop bp
+  mov sp, bp
+  pop bp
+  ret
+string2number endp
+
 ;; [bp+4]: Number of elements in array (length)
 ;; [bp+6]: Address of int array
 ;; Modifies no registers, modifies passed array with user input ints
@@ -141,8 +207,7 @@ arrInput proc
   mov cx, [bp+4] ; Move array length into cx to loop over it
   mov bx, [bp+6] ; Move base pointer for array into bx
   getElem:
-  TODO
-    prtStr msg2 ; Message to user to input a value
+    prtStr elemFetch ; Message to user to input a value
     call indec ; Grabs number as 16-bit signed int
     mov [bx], ax ; Moves number into current position in array
     add bx, 2 ; Advances array pointer by 2 bytes (1 word)
