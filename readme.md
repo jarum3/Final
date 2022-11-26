@@ -39,7 +39,29 @@ int arrLen;
 
 - First bit = most-significant
 
+
+
+1. Number's square
+
+2. Necessary bits do display
+
+3. Print the number in binary
+
+4. Print in octal
+
+5. Print in hex
+
+6. Print in decimal
+
+7. Check if number is prime
+
+8. Check if number is a perfect square
+
+9. Check if number is even
+
 ## NECESSARY:
+
+
 
 ```c
 int square(int x) { if (x < 181) return x * x } 
@@ -75,7 +97,6 @@ void printOctal(int x) {
         x<<3
     }
 } 
-
 ```
 
 ```c
@@ -95,7 +116,11 @@ void printDecimal(int x) {
 }
 ```
 
+ 
+
 ## OPTIONAL:
+
+
 
 ```c
 bool isPrime(int x) {
@@ -132,9 +157,21 @@ int isEven(int x) {
 }
 ```
 
+
+
 # Step 3:
 
 **Process the array itself in as many ways as possible. (These are extra)**
+
+1. Print the array
+
+2. Get the sum of the array
+
+3. Reverse the array, save to passed tempArray
+
+4. Swap two numbers in an array
+
+5. Bubble sort the array
 
 ```c
 void printArr(int[] arr, int arrLen) {
@@ -160,8 +197,6 @@ void reverseArr(int[] arr, int[] reverseArr, int arrLen) {
     }
 }
 ```
-
-
 
 ```c
 void swapArr(int* num1 int* num2) {
