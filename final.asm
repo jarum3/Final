@@ -3,7 +3,7 @@
 .data ; Data segment
   arr dw 10 dup(?)
   tempArr dw 10 dup(?)
-  arrLen dw 10
+  arrLen equ $ - arr
 .code ; Code segment
 
 include arrFunc.asm
