@@ -1,13 +1,7 @@
 .model small ; Set memory
 .stack	100h ; Set stack size
 .data ; Data segment
-  elemFetch db 0Ah, 0Dh, "Please enter a value: ", '$'
-  arr dw 5 dup(?)
-  arrLen dw 5
 .code ; Code segment
-
-extrn outdec: proc ; Prints a decimal value in AX as a signed integer, returns nothing
-extrn indec: proc ; Gets a signed decimal value from the user, stores in AX
 
 ;; Clears the screen
 clrScr macro
@@ -132,64 +126,9 @@ prtComma macro
   pop ax
 endm
 
-;; [bp+4]: Number of elements in array (length)
-;; [bp+6]: Address of int array
-;; Modifies no registers, modifies passed array with user input ints
-arrInput proc
-  ; Prologue
-  push bp
-  mov bp, sp
-  push ax
-  push bx
-  push cx
-  ; Main
-  mov cx, [bp+4] ; Move array length into cx to loop over it
-  mov bx, [bp+6] ; Move base pointer for array into bx
-  getElem:
-    prtStr elemFetch ; Message to user to input a value
-    call indec ; Grabs number as 16-bit signed int
-    mov [bx], ax ; Moves number into current position in array
-    add bx, 2 ; Advances array pointer by 2 bytes (1 word)
-    loop getElem ; Repeat arrLen times
-  ; Epilogue
-  pop cx
-  pop bx
-  pop ax
-  mov sp, bp
-  pop bp
-  ret
-arrInput endp
-
-;; [bp+4]: Number of elements in array (length)
-;; [bp+6]: Address of int array
-;; Modifies no memory
-prtArr proc
-  ; Prologue
-  push bp
-  mov bp, sp
-  push ax
-  push bx
-  push cx
-  ; Main
-  mov cx, [bp+4] ; Move array length into cx to loop over it
-  mov bx, [bp+6] ; Move base pointer for array into bx
-  printElem:
-    mov ax, [bx] ; Moves current pointed-to value into ax to print
-    call outdec ; Print value in ax
-    add bx, 2 ; Advance array pointer two bytes (one word)
-    cmp cx, 1
-    je lastElem ; Only print a comma for formatting if we aren't on the last element (cx=1)
-    prtComma
-    lastElem: ; Skips past printing a comma on last element
-      loop printElem
-  ; Epilogue
-  pop cx
-  pop bx
-  pop ax
-  mov sp, bp
-  pop bp
-  ret
-prtArr endp
-
-
-end main
+;; Exits the program, takes no arguments, returns nothing
+exit proc 
+  mov ax, 4c00h ; Set int 21h to terminate program with exit code 00 (All good)
+  int 21h  ; System interrupt to terminate program
+  ret ; Return (This is just because it feels nicer)
+exit endp
