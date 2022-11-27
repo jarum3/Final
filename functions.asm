@@ -19,6 +19,63 @@ clrScr macro
   pop ax ; Restoring ax
 endm
 
+; Bios interrupt for changing color, takes one byte
+chgColor macro color
+	
+  ; Prologue
+  push ax
+  push bx
+  push cx
+  push dx
+  ; Main
+  mov ah,06h
+	xor al, al
+	mov bh,color
+	xor cx, cx
+	mov dx,184fh		; paint to row 23 column 79
+	int 10h
+  ; Epilogue
+  pop dx
+  pop cx
+  pop bx
+  pop ax
+endm
+
+; Sound I/O interface
+sound macro freq,duration
+  ; Prologue
+  push ax
+  push cx
+  push dx
+  ; Main
+	mov al, 182         ; Prepare the speaker for the
+	out 43h, al         ; note.
+	mov ax,freq			    ; Set frequency to go out.
+	out 42h, al         ; Output low byte.
+	mov al, ah          ; Output high byte.
+	out 42h, al 
+	in  al, 61h         ; Turn on note (get value from port 61h).
+	or  al, 00000011b   ; Set bits 1 and 0.
+	out 61h, al         ; Send new value.
+	mov cx,duration		  ; Pause for duration of note.
+	mov dx,0fh
+	mov ah,86h			    ; CX:DX = how long pause is? I'm not sure exactly how it works but it's working
+	int 15h				      ; Pause for duration of note.
+	in  al, 61h         ; Turn off note (get value from
+                      ;  port 61h).
+	and al, 11111100b   ; Reset bits 1 and 0.
+	out 61h, al         ; Send new value.
+	
+	mov cx,01h			;Pause to give the notes some separation
+	mov dx,08h
+	mov ah,86h
+	int 15h
+  ; Epilogue
+  pop dx
+  pop cx
+  pop ax
+endm
+
 ;; Gets one char from user, puts it in ax
 getChar macro
 
