@@ -5,6 +5,11 @@
   tempArr dw 10 dup(?)
   arrLen dw 10
 .code ; Code segment
+
+include integerFunctions.asm
+include arrayFunctions.asm
+include IOFunctions.asm
+
 main proc ; Main process
   ; Initialize data
 	mov ax, @DATA ; Move the segment address for the data segment to ax
