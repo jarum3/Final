@@ -161,5 +161,5 @@ getDec proc
         int 21h
         mov dl, 0Ah
         int 21h
-        jmp @startGet		     	
+        jmp @startGet
 getDec endp 

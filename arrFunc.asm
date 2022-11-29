@@ -75,6 +75,6 @@ swapNumsArr proc
 ; TODO
 swapNumsArr endp
 
-bubbleSort proc
+selectionSort proc
 ; TODO
-bubbleSort endp
+selectionSort endp
