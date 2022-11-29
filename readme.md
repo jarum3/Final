@@ -6,11 +6,11 @@ These should be 16-bit signed integers. (Same as the indec proc given)**
 ### Persistent data:
 
 ```c
-int[] array;
+int array[];
 ```
 
 ```c
-int[] tempArray; // This is to store values for array functions.
+int tempArray[]; // This is to store values for array functions.
 ```
 
 ```c
@@ -38,9 +38,6 @@ int arrLen;
 - Last bit = least-significant
 
 - First bit = most-significant
-
-
-
 1. Number's square
 
 2. Necessary bits do display
@@ -60,8 +57,6 @@ int arrLen;
 9. Check if number is even
 
 ## NECESSARY:
-
-
 
 ```c
 int square(int x) { if (x < 181) return x * x } 
@@ -116,11 +111,7 @@ void printDecimal(int x) {
 }
 ```
 
- 
-
 ## OPTIONAL:
-
-
 
 ```c
 bool isPrime(int x) {
@@ -157,8 +148,6 @@ int isEven(int x) {
 }
 ```
 
-
-
 # Step 3:
 
 **Process the array itself in as many ways as possible. (These are extra)**
@@ -174,7 +163,7 @@ int isEven(int x) {
 5. Bubble sort the array
 
 ```c
-void printArr(int[] arr, int arrLen) {
+void printArr(int arr[], int arrLen) {
     for (int i = 0; i < arrLen; i++) {
         printDecimal(arr[i]);
     }
@@ -182,7 +171,7 @@ void printArr(int[] arr, int arrLen) {
 ```
 
 ```c
-int sumArr(int[] arr, int arrLen) {
+int sumArr(int arr[], int arrLen) {
     int sum = 0;
     for (int i = 0; i < arrLen; i++) {
         sum += arr[i];
@@ -191,7 +180,7 @@ int sumArr(int[] arr, int arrLen) {
 ```
 
 ```c
-void reverseArr(int[] arr, int[] reverseArr, int arrLen) {
+void reverseArr(int arr[], int reverseArr[], int arrLen) {
     for (int i = 1; i <= arrLen; i++) {
         reverseArr[arrLen-i] = arr[i-1];
     }
@@ -199,7 +188,7 @@ void reverseArr(int[] arr, int[] reverseArr, int arrLen) {
 ```
 
 ```c
-void swapArr(int* num1 int* num2) {
+void swapArr(int *num1 int *num2) {
     tempInt = *num1;
     *num1 = *num2;
     *num2 = tempInt;
@@ -208,7 +197,7 @@ void swapArr(int* num1 int* num2) {
 
 ```c
 // This is ambitious but I feel like if we manage it, it'll make our project more impressive.
-void sortArr(int[] arr, int arrLen) {
+void sortArr(int arr[], int arrLen) {
     for (int i = 0; i < arrLen-1; i++) {
         for (int j = 0; j < arrLen-i-1; i++) {
             if (arr[j] > arr[j+1]) swapArr(&arr[j], &arr[j+1])
