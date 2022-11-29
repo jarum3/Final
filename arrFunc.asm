@@ -64,17 +64,49 @@ prtArr proc
 prtArr endp
 
 sumArr proc
+; Prologue
+push bp
+mov bp, sp
+; Main
 ; TODO
+; Epilogue
+mov sp, bp
+pop bp
+ret
 sumArr endp
 
 reverseArray proc
+; Prologue
+push bp
+mov bp, sp
+; Main
 ; TODO
+; Epilogue
+mov sp, bp
+pop bp
+ret
 reverseArray endp
 
 swapNumsArr proc
+; Prologue
+push bp
+mov bp, sp
+; Main
 ; TODO
+; Epilogue
+mov sp, bp
+pop bp
+ret
 swapNumsArr endp
 
 selectionSort proc
+; Prologue
+push bp
+mov bp, sp
+; Main
 ; TODO
+; Epilogue
+mov sp, bp
+pop bp
+ret
 selectionSort endp

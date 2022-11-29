@@ -6,65 +6,150 @@ include ioFunc.asm
 proc square
 ; Takes value on stack as input, returns value on stack squared in ax, or -1 if value is too large.
 ; Prologue
-mov ax, [bp+4]
+push bp ; Save base pointer
+mov bp, sp ; Move initial stack pointer into base pointer
+; Main
+mov ax, [bp+4] ; Grab first argument into ax
 cmp ax, 181 ; Approximate square root of max value
-jg squareError
-imul ax
-ret
+jg squareError ; Return -1
+imul ax ; Signed multiply ax by ax
+jmp squareExiter
 squareError:
   mov ax, -1
+  ; Fall into next label
+squareExiter:
+  mov sp, bp ; Restore initial stack pointer
+  pop bp ; Pop base pointer from stack
   ret
 square endp
 
 proc necessaryBits
+;; Takes value on stack as input, returns the number of bits necessary to represent that number in ax.
+;; You can add up powers of 2, or just trim off leading zeros from the actual binary value
+; Prologue
+push bp
+mov bp, sp
+; Main
 ; TODO
+; Epilogue
+mov sp, bp
+pop bp
+ret
 necessaryBits endp
 
 proc isPrime
+;; Takes value on stack as input, returns a boolean (1/0) of whether that number is a prime number.
+;; You can simply loop through every number up to x/2, divide it, check the remainder if its zero.
+;; Return true if x divides evenly (0 remainder) into any number that's not 1 or x.
+; Prologue
+push bp
+mov bp, sp
+; Main
 ; TODO
+; Epilogue
+mov sp, bp
+pop bp
+ret
 isPrime endp
 
-proc perfectSquare 
+proc perfectSquare
+;; Takes value on stack as input, returns a boolean (1/0) of whether or not that number is a perfect square
+;; You can simply loop through every number up to sqrt(x), square it (push i, call square, pop i into a different register)
+;; If it squares into x, x is a perfect square.
+; Prologue
+push bp
+mov bp, sp
+; Main
 ; TODO
+; Epilogue
+mov sp, bp
+pop bp
+ret
 perfectSquare endp
 
 proc isNegative
-  mov ax, [bp+4]
+;; Returns a boolean on whether or not a value on the stack is negative
+  ; Prologue
+  push bp
+  mov bp, sp
+  ; Main
+  mov ax, [bp+4] ; Move argument into ax
   or ax, ax ; Sets SF to sign of AX
-  jge negativeFalse
-  mov ax, 1
-  ret
+  jge negativeFalse ;; Checks sign flag, jumps if its not set.
+  mov ax, 1 ; Return 1 if sign bit is true
+  jmp negativeexiter ; Return
   negativeFalse:
-    xor ax, ax
-    ret
+    xor ax, ax ;; Return 0 if sign bit is false
+    ; Fall into next label
+  negativeExiter:
+  ; Epilogue
+  mov sp, bp
+  pop  bp
+  ret
 isNegative endp
 
 proc isEven
-  mov ax, [bp+4]
-  and ax, 1b
+;; Returns a boolean on whether or not a value on the stack is even
+;; This is equal to the least-significant bit
+;; Does not use any registers it doesn't return.
+  ; Prologue
+  push bp
+  mov bp, sp
+  ; Main
+  mov ax, [bp+4] ; Move argument into ax
+  and ax, 1b ; Set all bits except for least-significant to 0
+  ; Epilogue
+  mov sp, bp
+  pop  bp
   ret
 isEven endp
 
 proc printBinary
+; Prologue
+push bp
+mov bp, sp
+; Main
 ; TODO
+; Epilogue
+mov sp, bp
+pop bp
+ret
 printBinary endp
 
 proc printOctal
+; Prologue
+push bp
+mov bp, sp
+; Main
 ; TODO
+; Epilogue
+mov sp, bp
+pop bp
+ret
 printOctal endp
 
 proc printHex
+; Prologue
+push bp
+mov bp, sp
+; Main
 ; TODO
+; Epilogue
+mov sp, bp
+pop bp
+ret
 printHex endp
 
 printDec proc
 ; Prints value on stack as a signed decimal integer
+  ; Prologue
   push bp
   mov bp, sp
   push ax
   push bx
   push cx
   push dx
+  ; Main
   mov ax, [bp+4]
   or ax, ax ; Sets SF to sign bit and ZF to ax==0
   jge @prtPositive ; If ax isn't negative, skip the negation
@@ -110,6 +195,7 @@ getDec proc
   push bx
   push cx
   push dx
+  ; Main
   @startGet:
     xor bx, bx ; Clear bx to hold total
     xor cx, cx ; Clear cx to hold sign
@@ -155,11 +241,11 @@ getDec proc
         mov sp, bp
         pop bp
         ret
-      @notDig:
+      @notDig: ; Print newline, re-loop
         mov ah, 2
         mov dl, 0Dh
         int 21h
         mov dl, 0Ah
         int 21h
         jmp @startGet
-getDec endp 
+getDec endp
