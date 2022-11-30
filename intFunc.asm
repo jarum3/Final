@@ -54,7 +54,7 @@ pop bp
 ret
 isPrime endp
 
-proc perfectSquare
+proc isPerfectSquare
 ;; Takes value on stack as input, returns a boolean (1/0) of whether or not that number is a perfect square
 ;; You can simply loop through every number up to sqrt(x), square it (push i, call square, pop i into a different register)
 ;; If it squares into x, x is a perfect square.
@@ -67,7 +67,7 @@ mov bp, sp
 mov sp, bp
 pop bp
 ret
-perfectSquare endp
+isPerfectSquare endp
 
 proc isNegative
 ;; Returns a boolean on whether or not a value on the stack is negative
@@ -92,7 +92,7 @@ isNegative endp
 
 proc isEven
 ;; Returns a boolean on whether or not a value on the stack is even
-;; This is equal to the least-significant bit
+;; This is equal to the inverse of the least-significant bit
 ;; Does not use any registers it doesn't return.
   ; Prologue
   push bp
@@ -100,9 +100,10 @@ proc isEven
   ; Main
   mov ax, [bp+4] ; Move argument into ax
   and ax, 1b ; Set all bits except for least-significant to 0
+  xor ax, 1b ; Invert least-significant bit
   ; Epilogue
   mov sp, bp
-  pop  bp
+  pop bp
   ret
 isEven endp
 
@@ -116,13 +117,14 @@ push cx
 ; Main
 mov ax, [bp+4]
 push ax
-call necessarybits
-mov bx, ax
+; TODO
+; call necessarybits
+mov bx, 16 ; THIS SHOULD BE AX
 mov cx, 16
 sub cx, bx
 pop ax ; AX holds the input number, bx holds the number of bits required to display it, cx holds the number of unnecessary bits
 shl ax, cl ; Shift left the number of unnecessary bits
-mov bx, cx ; Move bit count into cx for looping
+mov cx, bx ; Move bit count into cx for looping
 binaryPrinter:
   or ax, ax ; Gets highest bit into SF
   jge binaryPrintZero; Jumps if highest bit is 0

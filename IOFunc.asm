@@ -1,6 +1,8 @@
 .model small ; Set memory
 .stack	100h ; Set stack size
 .data ; Data segment
+true db "True", '$'
+false db "False", '$'
 .code ; Code segment
 
 ;; Clears the screen
@@ -125,6 +127,28 @@ prtComma macro
   pop dx
   pop ax
 endm
+
+prtBool proc
+
+  ; Prologue
+  push bp
+  mov bp, sp
+  push ax
+  ; Main
+  mov ax, [bp+4]
+  cmp ax, 1
+  je boolTrue
+  prtStr false
+  jmp boolExit
+  boolTrue:
+  prtStr True
+  boolExit:
+  ; Epilogue
+  pop ax
+  mov sp, bp
+  pop bp
+  ret
+prtBool endp
 
 ;; Exits the program, takes no arguments, returns nothing
 exit proc 

@@ -21,6 +21,8 @@
       currNumPerfectSquare db 0Ah, 0Dh, "Number is a perfect square: ", '$'
       currNumPrime db 0Ah, 0Dh, "Number is prime: ", '$'
       currNumEven db 0Ah, 0Dh, "Number is even: ", '$'
+    ; Other strings
+    squareErrorMessage db "This number is too large to square.", '$'
 .code ; Code segment
 
 include arrFunc.asm
@@ -31,23 +33,96 @@ main proc ; Main process
 	mov ax, @DATA ; Move the segment address for the data segment to ax
 	mov ds, ax ; Move the segment address for data from ax to ds (You can only move into dx from a register
   ; Main function
-  start:
+  beginning:
   ; Input grabber
-  push arr
+  push offset arr
   push arrLen
   call getArr ; Arr is filled with values input by user
-  pop cx ; Move array length into cx
   xor bx, bx ; This will hold current offset for array
+  arrProcessing:
+  prtStr arrDisplayer
+  call prtArr
+  ; TODO
+  ;prtStr arrSumDisplay
+  ;call sumArr
+  ;push ax
+  ;call printDec
+  ;pop ax
+
+  ;push offset arr
+  ;push offset tempArr
+  ;push arrLen
+  ;call reverseArray
+  ;prtStr arrReverseDisplay
+  ;call prtArr
+
+  ;call selectionSort
+  ;prtStr arrSortedDisplay
+  ;call prtArr
+
   intProcessing:
     mov dx, [arr+bx]
     push dx ; Push current integer onto stack
     ; Display current number with line
+    ; Printing
     prtStr currNumDecimal
     call printDec
+    prtStr currNumBinary
+    call printBinary
+    prtStr currNumOctal
+    call printOctal
+    prtStr currNumHex
+    call printHex
     
+    ; PRINT(necessaryBits(i));
+    ;prtStr currNumBits
+    ;call necessaryBits
+    ;push ax
+    ;call printDec
+    ;pop ax
+    
+    prtStr currNumSquare
+    call square
+    cmp ax, -1
+    je squareOverflow
+    push ax
+    call printDec
+    pop ax
+    jmp continueInts
+    squareOverflow:
+      prtStr squareErrorMessage
+    continueInts:
+    prtStr currNumNegative
+    call isNegative
+    push ax
+    call prtBool
+    pop ax
+
+    prtStr currNumPerfectSquare
+    call isPerfectSquare
+    push ax
+    call prtBool
+    pop ax
+    
+    prtStr currNumPrime
+    call isPrime
+    push ax
+    call prtBool
+    pop ax
+    
+    prtStr currNumEven
+    call isEven
+    push ax
+    call prtBool
+    pop ax
     ; Loop ending
     add bx, 2 ; Go to next element
-    loop intProcessing ; This executes for arrLen times, so it goes over everything in the array.
+    shr bx, 1
+    cmp bx, arrLen
+    jge mainExiter
+    shl bx, 1
+    jmp intProcessing
+  mainExiter:
   call exit ; Exits the program
 main endp
 
