@@ -108,9 +108,33 @@ proc printBinary
 ; Prologue
 push bp
 mov bp, sp
+push ax
+push bx
+push cx
 ; Main
-; TODO
+mov ax, [bp+4]
+push ax
+call necessarybits
+mov bx, ax
+mov cx, 16
+sub cx, bx
+pop ax ; AX holds the input number, bx holds the number of bits required to display it, cx holds the number of unnecessary bits
+shl ax, cx ; Shift left the number of unnecessary bits
+mov bx, cx ; Move bit count into cx for looping
+binaryPrinter:
+  or ax, ax ; Gets highest bit into SF
+  jge binaryPrintZero; Jumps if highest bit is 0
+  prtDig 1
+  jmp binaryPrintShifter
+binaryPrintZero:
+  prtDig 0
+binaryPrintShifter:
+  shl ax, 1
+  loop binaryPrinter ; Loops for NecessaryBits(x) number of times
 ; Epilogue
+pop cx
+pop bx
+pop ax
 mov sp, bp
 pop bp
 ret
