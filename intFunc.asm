@@ -119,7 +119,7 @@ mov bx, ax
 mov cx, 16
 sub cx, bx
 pop ax ; AX holds the input number, bx holds the number of bits required to display it, cx holds the number of unnecessary bits
-shl ax, cx ; Shift left the number of unnecessary bits
+shl ax, cl ; Shift left the number of unnecessary bits
 mov bx, cx ; Move bit count into cx for looping
 binaryPrinter:
   or ax, ax ; Gets highest bit into SF
@@ -188,6 +188,7 @@ printDec proc
     xor cx, cx ; Clear cx so that it can increment number of digits
     mov bx, 10D ; Put 10 into bx for division
   @DigitLoop:
+    xor dx, dx
     div bx ; AX = quotient, DX = remainder
     push dx ; Save remainder to stack (Remainder will be least-significant digit)
     inc cx ; Increase number of digits for each division
