@@ -61,6 +61,7 @@ main proc ; Main process
   ;call prtArr
 
   intProcessing:
+    pause
     mov dx, [arr+bx]
     push dx ; Push current integer onto stack
     ; Display current number with line

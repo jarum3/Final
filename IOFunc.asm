@@ -3,6 +3,7 @@
 .data ; Data segment
 true db "True", '$'
 false db "False", '$'
+pauser db 0Ah, 0Dh, "Press any key...", 0Ah, 0Dh, '$'
 .code ; Code segment
 
 ;; Clears the screen
@@ -12,6 +13,12 @@ clrScr macro
   mov ax, 0002h ; Clearing screen in BIOS
   int 10h
   pop ax ; Restoring ax
+endm
+
+pause macro
+
+  prtStr pauser
+  getChar
 endm
 
 ; Bios interrupt for changing color, takes one byte
