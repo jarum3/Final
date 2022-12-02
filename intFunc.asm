@@ -153,7 +153,7 @@ push ax
 push cx
 ; Main
 mov ax, [bp+4]
-mov cx, 5 ; Loop number
+mov cx, 5 ; Loop number ((Necessarybits+1)/3)
 or ax, ax ; Loads sign bit into SF
 jge octalPositive ; Jumps if positive (Don't print negative symbol, still disregard sign bit)
 prtChar '-'
@@ -188,7 +188,7 @@ push bp
 mov bp, sp
 ; Main
 mov ax, [bp+4]
-mov cx, 4 ; Loop number
+mov cx, 4 ; Loop number ((Necessarybits+2)/4)
 or ax, ax ; Loads sign bit into SF
 jge hexPrinter ; Jumps if positive (Don't print negative symbol, still disregard sign bit)
 prtChar '-'
