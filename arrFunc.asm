@@ -91,12 +91,29 @@ ret
 reverseArray endp
 
 swapNumsArr proc
+;; Takes two pointers, [bp+4] and [bp+6]
+;; Swaps their values
 ; Prologue
 push bp
 mov bp, sp
+push bx
+push cx
+push di
+push si
 ; Main
-; TODO
+mov di, [bp+4] ; Holds pointer to second num
+mov si, [bp+6] ; Holds pointer to first num
+mov bx, [di] ; bx grabs value from di pointer (second num)
+mov cx, [si] ; cx grabs value from si pointer (first num)
+mov [si], bx ; Replaces value at memory address [bp+6] with [bp+4]'s value
+mov [di], cx ; Replaces value at memory address [bp+4] with [bp+6]'s value
+mov [bp+6], si
+mov [bp+4], di
 ; Epilogue
+pop si
+pop di
+pop cx
+pop bx
 mov sp, bp
 pop bp
 ret
