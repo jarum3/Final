@@ -51,7 +51,7 @@ prtArr proc
   printElem:
     push [bx] ; Moves current pointed-to value onto stack to print
     call printDec ; Print value to screen
-    pop dx ; Collecting value off stack
+    pop dx ; Collecting value off stack (Just to decrement stack pointer honestly)
     add bx, 2 ; Advance array pointer two bytes (one word)
     cmp cx, 1
     je lastElem ; Only print a comma for formatting if we aren't on the last element (cx=1)
@@ -110,9 +110,19 @@ sumArr proc
 ; Prologue
 push bp
 mov bp, sp
+push bx
+push cx
 ; Main
-; TODO
+xor ax, ax ; Clear ax to hold sum
+mov bx, [bp+6] ; Base address
+mov cx, [bp+4] ; Length
+sumArrLoop:
+  add ax, [bx] ; Add the value held in bx's address to ax (Current elem value)
+  add bx, 2 ; Increment pointer
+  loop sumarrloop ; Repeat for each element
 ; Epilogue
+pop cx
+pop bx
 mov sp, bp
 pop bp
 ret
