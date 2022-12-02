@@ -103,6 +103,22 @@ prtDig macro dig
   pop ax
 endm
 
+
+; Prints a single one-byte char to screen
+prtChar macro char
+  
+  ; Prologue
+  push ax
+  push dx
+  ; Main
+  mov dl, char
+  mov ah, 02h
+  int 21h
+  ; Epilogue
+  pop dx
+  pop ax
+endm
+
 ;; Prints a string to screen, takes a null-terminated string as input, returns nothing.
 prtStr macro str
 
@@ -117,6 +133,31 @@ prtStr macro str
   pop dx ; Return state of dx
   pop ax ; Return state of ax
 endm
+
+;; Prints a single one-byte hexadecimal digit to screen from stack
+prtHexDig proc
+; Prologue
+push bp
+mov bp, sp
+push ax
+push dx
+; Main
+mov ax, [bp+4]
+cmp al, 9
+jl normalDig
+add al, 37h ; Convert to ascii letters
+prtChar al
+jmp hexdigitend
+normalDig:
+prtDig al
+; Epilogue
+hexDigitEnd:
+pop dx
+pop ax
+mov sp, bp
+pop bp
+ret
+prtHexDig endp
 
 ;; Simply prints a comma and then a space, useful for array formatting
 prtComma macro

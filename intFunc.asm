@@ -145,23 +145,68 @@ ret
 printBinary endp
 
 proc printOctal
+;; TODO: Trim leading zeros
 ; Prologue
 push bp
 mov bp, sp
+push ax
+push cx
 ; Main
-; TODO
+mov ax, [bp+4]
+mov cx, 5 ; Loop number
+or ax, ax ; Loads sign bit into SF
+jge octalPositive ; Jumps if positive (Don't print negative symbol, still disregard sign bit)
+prtChar '-'
+neg ax ; Make ax positive
+octalPositive:
+shl ax, 1
+octalPrinter:
+  push cx
+  push ax
+  and ax, 0E000h ; Bitmask for first 3 bits
+  mov cl, 13
+  shr ax, cl ; Moves bits into least-significant bits
+  prtDig al
+  pop ax
+  mov cl, 3
+  shl ax, cl
+  pop cx
+  loop octalprinter
 ; Epilogue
+pop cx
+pop ax
 mov sp, bp
 pop bp
 ret
 printOctal endp
 
 proc printHex
+;; TODO: Trim leading zeros
+;; Goes from -7FFF to 7FFF
 ; Prologue
 push bp
 mov bp, sp
 ; Main
-; TODO
+mov ax, [bp+4]
+mov cx, 4 ; Loop number
+or ax, ax ; Loads sign bit into SF
+jge hexPrinter ; Jumps if positive (Don't print negative symbol, still disregard sign bit)
+prtChar '-'
+neg ax ; Make ax positive
+hexPrinter:
+  push cx
+  push ax
+  and ax, 0F000h ; Bitmask for first 4 bits
+  mov cl, 12
+  shr ax, cl ; Moves bits into least-significant bits
+  push ax ; Pushing ax for process call
+  call prtHexDig
+  pop ax ; Clearing stack from process call
+  pop ax ; Restoring ax from before bitmask
+  mov cl, 4 ; Shifting 4 bits left
+  shl ax, cl
+  pop cx ; Restoring cx for loop counter
+  loop hexprinter
 ; Epilogue
 mov sp, bp
 pop bp
