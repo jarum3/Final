@@ -26,7 +26,7 @@ square endp
 proc necessaryBits
 ;; Takes value on stack as input, returns the number of bits necessary to represent that number in ax.
 ;; You can add up powers of 2, or just trim off leading zeros from the actual binary value
-;; Include the sign bit if the number is negative, but don't include it if the number is positive.
+;; Include the sign bit regardless of the number's sign, 1 should be 01 and -1 should be 11, 3 should be 011.
 ;; You can just store the sign bit, negate, process as positive, then add the sign bit back on at the end.
 ; Prologue
 push bp

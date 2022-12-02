@@ -47,6 +47,7 @@ prtArr proc
   ; Main
   mov cx, [bp+4] ; Move array length into cx to loop over it
   mov bx, [bp+6] ; Move base pointer for array into bx
+  prtChar '[' ; Start of array
   printElem:
     push [bx] ; Moves current pointed-to value onto stack to print
     call printDec ; Print value to screen
@@ -56,7 +57,8 @@ prtArr proc
     je lastElem ; Only print a comma for formatting if we aren't on the last element (cx=1)
     prtComma
     lastElem: ; Skips past printing a comma on last element
-      loop printElem
+    loop printElem
+    prtchar ']' ; End of array
   ; Epilogue
   pop dx
   pop cx
