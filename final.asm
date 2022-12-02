@@ -42,23 +42,25 @@ main proc ; Main process
   arrProcessing:
   prtStr arrDisplayer
   call prtArr
-  ; TODO
-  ;prtStr arrSumDisplay
-  ;call sumArr
-  ;push ax
-  ;call printDec
-  ;pop ax
 
-  ;push offset arr
-  ;push offset tempArr
-  ;push arrLen
-  ;call reverseArray
-  ;prtStr arrReverseDisplay
-  ;call prtArr
+  prtStr arrSumDisplay
+  call sumArr ; TODO
+  push ax
+  call printDec
+  pop ax
 
-  ;call selectionSort
-  ;prtStr arrSortedDisplay
-  ;call prtArr
+  push offset arr
+  push offset tempArr
+  push arrLen
+  call reverseArray ; TODO
+  call copyArr ; TODO
+  prtStr arrReversedDisplay
+  call prtArr
+
+  ;; Sorts tempArray in-place
+  call selectionSort
+  prtStr arrSortedDisplay
+  call prtArr
 
   intProcessing:
     pause
@@ -75,12 +77,12 @@ main proc ; Main process
     prtStr currNumHex
     call printHex
     
-    ; PRINT(necessaryBits(i));
-    ;prtStr currNumBits
-    ;call necessaryBits
-    ;push ax
-    ;call printDec
-    ;pop ax
+    ; TODO
+    prtStr currNumBits
+    call necessaryBits
+    push ax
+    call printDec
+    pop ax
     
     prtStr currNumSquare
     call square
@@ -99,12 +101,14 @@ main proc ; Main process
     call prtBool
     pop ax
 
+    ; TODO
     prtStr currNumPerfectSquare
     call isPerfectSquare
     push ax
     call prtBool
     pop ax
     
+    ; TODO
     prtStr currNumPrime
     call isPrime
     push ax

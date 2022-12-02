@@ -1,5 +1,6 @@
 ;; [bp+4] should hold passed length, after function call and base pointer are pushed onto stack
-;; [bp+6] should be address to base of array
+;; [bp+6] should be address to base of array (Or destination array, in those cases)
+;; [bp+8] should optionally hold source array, in cases where its applicable
 
 .data
   elemFetch db 0Ah, 0Dh, "Please enter a value: ", '$'
@@ -66,6 +67,43 @@ prtArr proc
   ret
 prtArr endp
 
+
+;; [bp+4]: Number of elements in array (length)
+;; [bp+6]: Address of int array
+;; Returns ax = Largest Value and bx = Index of largest value
+;; Picks first value if duplicates exist, negative numbers are less than 0
+smlArr proc
+  ; Prologue
+  push bp
+  mov bp, sp
+  ; Don't need to push ax or bx, they need to be destroyed because they're returning values
+  push cx
+  push dx
+  ; Main
+  mov cx, [bp+4] ; Move array length into cx to loop over it
+  mov bx, [bp+6] ; Move base pointer for array into bx
+  mov ax, [bx] ; Make first element by default greatest
+  xor dx, dx ; Set index of greatest to 0, to point to the first element
+  lesElem:
+    cmp [bx], ax
+    jge notSmaller ; Skip saving value if it's not less
+    mov ax, [bx] ; If current elem is less than ax, move it into ax
+    ; cx holds len-index, index = len-cx
+    mov dx, [bp+4] ; dx = length
+    sub dx, cx ; dx becomes index = len-cx = dx-cx
+    notSmaller:
+      add bx, 2 ; Size of word in bytes
+      loop lesElem
+  lesReturning:
+    mov bx, dx ; move index into bx, ax already holds largest value
+  ; Epilogue
+  pop dx
+  pop cx
+  mov sp, bp
+  pop bp
+  ret
+smlArr endp
+
 sumArr proc
 ; Prologue
 push bp
@@ -89,6 +127,38 @@ mov sp, bp
 pop bp
 ret
 reverseArray endp
+
+copyArr proc
+;; Takes two base arrays, and their length, and copies element-by-element to new memory location
+; Prologue
+push bp
+mov bp, sp
+push ax
+push bx
+push cx
+push dx
+; Main
+mov bx, [bp+8] ; Base address of source array
+mov cx, [bp+4] ; Length of both arrays
+mov dx, [bp+6] ; Base address of destination array
+copyArrLoop:
+mov ax, [bx]
+push bx
+mov bx, dx
+mov [bx], ax
+pop bx
+add bx, 2
+add dx, 2
+loop copyArrLoop
+; Epilogue
+pop dx
+pop cx
+pop bx
+pop ax
+mov sp, bp
+pop bp
+ret
+copyArr endp
 
 swapNumsArr proc
 ;; Takes two pointers, [bp+4] and [bp+6]
@@ -123,9 +193,35 @@ selectionSort proc
 ; Prologue
 push bp
 mov bp, sp
+push ax
+push bx
+push cx
 ; Main
-; TODO
+mov bx, [bp+6] ; Holds base of array
+mov cx, [bp+4] ; Holds length of array
+
+selectingSort:
+;; BX holds address of current elem in array (Also base of array to newly sort)
+;; CX holds length of current array (Decrements 1 every loop)
+  push bx
+  push cx
+  call smlArr ; Loads lowest VALUE into ax and its INDEX into bx (Loops over whole array, nested loop)
+  pop cx
+  mov dx, bx
+  pop bx
+  shl dx, 1
+  add dx, bx
+  push bx
+  push dx
+  call swapNumsArr ; Swaps current (bottom) elem with memory address of lowest value
+  pop dx
+  pop bx
+  add bx, 2
+loop selectingSort
 ; Epilogue
+pop cx
+pop bx
+pop ax
 mov sp, bp
 pop bp
 ret
