@@ -56,7 +56,7 @@ isPrime endp
 
 proc isPerfectSquare
 ;; Takes value on stack as input, returns a boolean (1/0) of whether or not that number is a perfect square
-;; You can simply loop through every number up to sqrt(x), square it (push i, call square, pop i into a different register)
+;; You can simply loop through every number up to sqrt(x) (Always less than 182), square it (push i, call square, pop i into a different register, or just imul)
 ;; If it squares into x, x is a perfect square.
 ; Prologue
 push bp
