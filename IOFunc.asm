@@ -184,12 +184,12 @@ prtBool proc
   push ax
   ; Main
   mov ax, [bp+4]
-  cmp ax, 1
-  je boolTrue
-  prtStr false
+  or ax, ax
+  jz boolFalse
+  prtStr true
   jmp boolExit
-  boolTrue:
-  prtStr True
+  boolFalse:
+  prtStr false
   boolExit:
   ; Epilogue
   pop ax
