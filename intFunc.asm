@@ -3,11 +3,6 @@
 include ioFunc.asm
 ; IOFunc -> intFunc -> arrFunc -> final
 
-.data
-error db "Error!", '$'
-
-.code
-
 proc square
 ; Takes value on stack as input, returns value on stack squared in ax, or -1 if value is too large.
 ; Prologue
@@ -28,6 +23,7 @@ squareExiter:
   ret
 square endp
 
+
 proc necessaryBits
 ;; Takes value on stack as input, returns the number of bits necessary to represent that number in ax.
 ;; You can add up powers of 2, or just trim off leading zeros from the actual binary value
@@ -43,6 +39,7 @@ mov sp, bp
 pop bp
 ret
 necessaryBits endp
+
 
 proc isPrime
 ;; Takes value on stack as input, returns a boolean (1/0) of whether that number is a prime number.
@@ -61,7 +58,6 @@ shr dx, 1 ; Move x/2 into dx, max loop count
 mov cx, 2 ; Set cx to 2, smallest possible factor for a non-prime
 cmp bx, 1 ; if the given number is 1 or less its not a prime
 jle isNotPrime
-
 primeCalc:
 	cmp cx, dx ; Compare loop counter to x/2
   jg isAPrime ; (This immediately jumps for 2 and 3)
@@ -74,11 +70,9 @@ primeCalc:
 	jz isNotPrime
 	inc cx ; Move cx up one, this counts from 2 to x/2
   jmp primecalc ; Unconditional jump, there's a condition at the beginning.
-	
 isAPrime:
 	mov ax,1
 	jmp endPrime
-
 isNotPrime:
 	xor ax, ax ; Set ax to 0
 endPrime:
@@ -90,6 +84,7 @@ mov sp, bp
 pop bp
 ret
 isPrime endp
+
 
 proc isPerfectSquare
 ;; Takes value on stack as input, returns a boolean (1/0) of whether or not that number is a perfect square
@@ -103,14 +98,11 @@ push cx
 ; Main
 mov bx, [bp+4] ; Moving possible square to bx
 mov cx, 181 ; Max square root of a perfect square
-
 cmp bx, 0
 jl notSquare ; Perfect squares are always positive
 jz isSquare ; 0 is a perfect square by definition
 ; Fall into squareCalc if it's not any defined case
-
 squareCalc:
-
 	push cx ; cx is our loop variable, it counts down from 181 to 0
 	call square ; ax = cx^2
   pop cx ; Pop cx off stack (Simply subtracting stack pointer)
@@ -121,7 +113,6 @@ squareCalc:
 notSquare:
 	xor ax, ax ; Clearing ax to 0 to represent boolean false
 	jmp squareEnd
-
 isSquare:
 	mov ax, 1 ; Move boolean true into ax to return
   ; We fall into function epilogue
@@ -133,6 +124,7 @@ mov sp, bp
 pop bp
 ret
 isPerfectSquare endp
+
 
 proc isNegative
 ;; Returns a boolean on whether or not a value on the stack is negative
@@ -155,6 +147,7 @@ proc isNegative
   ret
 isNegative endp
 
+
 proc isEven
 ;; Returns a boolean on whether or not a value on the stack is even
 ;; This is equal to the inverse of the least-significant bit
@@ -171,6 +164,7 @@ proc isEven
   pop bp
   ret
 isEven endp
+
 
 proc printBinary
 ; Prologue
@@ -209,6 +203,7 @@ pop bp
 ret
 printBinary endp
 
+
 proc printOctal
 ;; TODO: Trim leading zeros
 ; Prologue
@@ -245,6 +240,7 @@ pop bp
 ret
 printOctal endp
 
+
 proc printHex
 ;; TODO: Trim leading zeros
 ;; Goes from -7FFF to 7FFF
@@ -277,6 +273,7 @@ mov sp, bp
 pop bp
 ret
 printHex endp
+
 
 printDec proc
 ; Prints value on stack as a signed decimal integer
@@ -325,6 +322,7 @@ printDec proc
   pop bp
   ret
 printDec endp
+
 
 ;; No arguments, returns user input as signed int in ax
 getDec proc
