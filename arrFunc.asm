@@ -208,8 +208,6 @@ mov bx, [di] ; bx grabs value from di pointer (second num)
 mov cx, [si] ; cx grabs value from si pointer (first num)
 mov [si], bx ; Replaces value at memory address [bp+6] with [bp+4]'s value
 mov [di], cx ; Replaces value at memory address [bp+4] with [bp+6]'s value
-mov [bp+6], si
-mov [bp+4], di
 ; Epilogue
 pop si
 pop di
