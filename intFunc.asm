@@ -56,14 +56,42 @@ isPrime endp
 
 proc isPerfectSquare
 ;; Takes value on stack as input, returns a boolean (1/0) of whether or not that number is a perfect square
-;; You can simply loop through every number up to sqrt(x) (Always less than 182), square it (push i, call square, pop i into a different register, or just imul)
+;; You can simply loop through every number up to sqrt(x), square it (push i, call square, pop i into a different register)
 ;; If it squares into x, x is a perfect square.
 ; Prologue
 push bp
 mov bp, sp
+push bx
+push cx
 ; Main
-; TODO
+mov bx, [bp+4] ; Moving possible square to bx
+mov cx, 181 ; Max square root of a perfect square
+
+cmp bx, 0
+jl notSquare ; Perfect squares are always positive
+jz isSquare ; 0 is a perfect square by definition
+; Fall into squareCalc if it's not any defined case
+
+squareCalc:
+
+	push cx ; cx is our loop variable, it counts down from 181 to 0
+	call square ; ax = cx^2
+  pop cx ; Pop cx off stack (Simply subtracting stack pointer)
+	cmp ax, bx ; Compare ax (cx^2) to bx (Input)
+	je isSquare ; If cx^2 == bx, bx is a perfect square
+	loop squareCalc ; Loop cx, 181 to 1
+  ; If we never find a square, we fall into this
+notSquare:
+	xor ax, ax ; Clearing ax to 0 to represent boolean false
+	jmp squareEnd
+
+isSquare:
+	mov ax, 1 ; Move boolean true into ax to return
+  ; We fall into function epilogue
+squareEnd:
 ; Epilogue
+pop cx
+pop bx
 mov sp, bp
 pop bp
 ret
