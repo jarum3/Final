@@ -3,6 +3,11 @@
 include ioFunc.asm
 ; IOFunc -> intFunc -> arrFunc -> final
 
+.data
+error db "Error!", '$'
+
+.code
+
 proc square
 ; Takes value on stack as input, returns value on stack squared in ax, or -1 if value is too large.
 ; Prologue
@@ -46,9 +51,41 @@ proc isPrime
 ; Prologue
 push bp
 mov bp, sp
+push bx
+push cx
+push dx
 ; Main
-; TODO
+mov bx, [bp+4] ; move possible prime to bx
+mov dx, bx
+shr dx, 1 ; Move x/2 into dx, max loop count
+mov cx, 2 ; Set cx to 2, smallest possible factor for a non-prime
+cmp bx, 1 ; if the given number is 1 or less its not a prime
+jle isNotPrime
+
+primeCalc:
+	cmp cx, dx ; Compare loop counter to x/2
+  jg isAPrime ; (This immediately jumps for 2 and 3)
+	mov ax, bx ; move the input number into ax for division
+  push dx ; Division overwrites DX
+  xor dx, dx
+	div cx    ; divide the input number by cx (Looping variable)
+  or dx, dx ; Compare dx (input % loopCounter) to 0
+  pop dx ; Restore dx from division
+	jz isNotPrime
+	inc cx ; Move cx up one, this counts from 2 to x/2
+  jmp primecalc ; Unconditional jump, there's a condition at the beginning.
+	
+isAPrime:
+	mov ax,1
+	jmp endPrime
+
+isNotPrime:
+	xor ax, ax ; Set ax to 0
+endPrime:
 ; Epilogue
+pop dx
+pop cx 
+pop bx
 mov sp, bp
 pop bp
 ret
