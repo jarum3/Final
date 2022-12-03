@@ -40,34 +40,34 @@ main proc ; Main process
   call getArr ; Arr is filled with values input by user
   xor bx, bx ; This will hold current offset for array
   arrProcessing:
-  prtStr arrDisplayer
+  prtStr arrDisplayer ; Printing out the initial array
   call prtArr
 
-  prtStr arrSumDisplay
-  call sumArr ; TODO
-  push ax
+  prtStr arrSumDisplay ; Printing out the sum
+  call sumArr
+  push ax ; AX holds return of sum function, pushing that to printDec
   call printDec
-  pop ax
+  pop ax ; Grabbing ax again
 
-  push offset arr
-  push offset tempArr
-  push arrLen
-  call copyArr
-  call reverseArray
-  prtStr arrReversedDisplay
+  push offset arr ; Base address of array holding user inputs
+  push offset tempArr ; Base address of empty array
+  push arrLen ; Length of both arrays
+  call copyArr ; Copies arr -> tempArr
+  call reverseArray ; Reverses tempArr
+  prtStr arrReversedDisplay ; Prints reversed array
   call prtArr
 
   ;; Sorts tempArray in-place
   call selectionSort
   prtStr arrSortedDisplay
-  call prtArr
+  call prtArr ; Prints sorted array
 
   intProcessing:
-    pause
-    mov dx, [arr+bx]
+    pause ; Pause at the beginning of every loop
+    mov dx, [arr+bx] ; Move the current integer into dx
     push dx ; Push current integer onto stack
     ; Display current number with line
-    ; Printing
+    ; Printing, self explanatory
     prtStr currNumDecimal
     call printDec
     prtStr currNumBinary
@@ -86,19 +86,21 @@ main proc ; Main process
     
     prtStr currNumSquare
     call square
-    cmp ax, -1
-    je squareOverflow
-    push ax
+    cmp ax, -1 ; numSquare returns -1 for overflow, (Squared ints can't be negative)
+    ; Technically this overflow could be a bit larger (181 -> 256) if we used an unsigned int, but all of these work with signed ints as-is
+    je squareOverflow ; Display an overflow message
+    push ax ; Print if a number was returned
     call printDec
     pop ax
-    jmp continueInts
+    jmp continueInts ; Skip over the overflow message
     squareOverflow:
-      prtStr squareErrorMessage
+      prtStr squareErrorMessage ; Print a message saying that the number was too large
     continueInts:
+    ; Back to printing
     prtStr currNumNegative
     call isNegative
     push ax
-    call prtBool
+    call prtBool ; Prints True or False for an integer
     pop ax
 
     ; TODO
@@ -122,11 +124,11 @@ main proc ; Main process
     pop ax
     ; Loop ending
     add bx, 2 ; Go to next element
-    shr bx, 1
-    cmp bx, arrLen
-    jge mainExiter
-    shl bx, 1
-    jmp intProcessing
+    shr bx, 1 ; Convert byte-count to length
+    cmp bx, arrLen ; Check if we've gone above length (after incrementing)
+    jge mainExiter ; If we've  gone above length, exit the function
+    shl bx, 1 ; Return bx to byte-count if we haven't jumped
+    jmp intProcessing ; Loop (This should be unconditional so we can actually reach the top of the program again)
   mainExiter:
   call exit ; Exits the program
 main endp
