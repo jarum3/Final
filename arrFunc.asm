@@ -132,9 +132,28 @@ reverseArray proc
 ; Prologue
 push bp
 mov bp, sp
+push ax
+push bx
+push cx
 ; Main
-; TODO
+mov bx, [bp+6]
+mov cx, [bp+4]
+reverseLoop1:
+  mov ax, [bx]
+  push ax
+  add bx, 2
+  loop reverseloop1
+mov cx, [bp+4]
+mov bx, [bp+6]
+reverseLoop2:
+  pop ax
+  mov [bx], ax
+  add bx, 2
+  loop reverseLoop2
 ; Epilogue
+pop cx
+pop bx
+pop ax
 mov sp, bp
 pop bp
 ret

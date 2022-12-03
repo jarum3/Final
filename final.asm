@@ -52,8 +52,8 @@ main proc ; Main process
   push offset arr
   push offset tempArr
   push arrLen
-  call reverseArray ; TODO
-  call copyArr ; TODO
+  call copyArr
+  call reverseArray
   prtStr arrReversedDisplay
   call prtArr
 
