@@ -23,10 +23,28 @@
       currNumEven db 0Ah, 0Dh, "Number is even: ", '$'
     ; Other strings
     squareErrorMessage db "This number is too large to square.", '$'
+    ; Colors
+    colorStart db 70h
+    colorInt db 1Eh
+    colorReset db 0Fh
+    ; Sounds
+    finFreq dw 6087, 3834, 2559
+    finDur dw 2, 2, 4
+    finLen dw 3
 .code ; Code segment
 
 include arrFunc.asm
 ; IOFunc -> intFunc -> arrFunc -> final
+
+playEndSound macro
+
+  xor bx, bx
+  mov cx, finLen
+  finSoundLoop:
+    sound finFreq+bx, finDur+bx
+    add bx, 2
+    loop finSoundLoop
+endm
 
 main proc ; Main process
   ; Initialize data
@@ -35,6 +53,8 @@ main proc ; Main process
   ; Main function
   beginning:
   ; Input grabber
+  clrScr
+  chgColor colorStart
   push offset arr
   push arrLen
   call getArr ; Arr is filled with values input by user
@@ -64,6 +84,8 @@ main proc ; Main process
 
   intProcessing:
     pause ; Pause at the beginning of every loop
+    clrScr
+    chgColor colorInt
     mov dx, [arr+bx] ; Move the current integer into dx
     push dx ; Push current integer onto stack
     ; Display current number with line
@@ -125,8 +147,12 @@ main proc ; Main process
     cmp bx, arrLen ; Check if we've gone above length (after incrementing)
     jge mainExiter ; If we've  gone above length, exit the function
     shl bx, 1 ; Return bx to byte-count if we haven't jumped
+    sound 2148, 4
     jmp intProcessing ; Loop (This should be unconditional so we can actually reach the top of the program again)
   mainExiter:
+  clrScr
+  chgColor colorReset
+  playEndSound
   call exit ; Exits the program
 main endp
 
