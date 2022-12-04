@@ -150,6 +150,8 @@ main proc ; Main process
     sound 2148, 4
     jmp intProcessing ; Loop (This should be unconditional so we can actually reach the top of the program again)
   mainExiter:
+  sound 2148, 4
+  pause
   clrScr
   chgColor colorReset
   playEndSound
