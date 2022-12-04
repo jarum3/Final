@@ -77,7 +77,6 @@ main proc ; Main process
     prtStr currNumHex
     call printHex
     
-    ; TODO
     prtStr currNumBits
     call necessaryBits
     push ax
@@ -103,14 +102,12 @@ main proc ; Main process
     call prtBool ; Prints True or False for an integer
     pop ax
 
-    ; TODO
     prtStr currNumPerfectSquare
     call isPerfectSquare
     push ax
     call prtBool
     pop ax
     
-    ; TODO
     prtStr currNumPrime
     call isPrime
     push ax

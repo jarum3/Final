@@ -32,9 +32,37 @@ proc necessaryBits
 ; Prologue
 push bp
 mov bp, sp
+push bx
+push cx
+push dx
 ; Main
-; TODO
+mov bx, [bp+4] ; Input
+cmp bx, 0
+jge positive
+neg bx ; Negate input, that way we don't have to process negative numbers inside the loop
+positive:
+xor cx, cx ; loop counter
+mov dx, 1
+
+cmp bx, 0
+je returnBits
+
+bitsLoop:
+inc cx
+shl dx, 1 ; Increase power by two
+cmp bx, dx ; If our input value is less than a power of two, we can return (dx should be 2^cx)
+jl returnBits
+
+cmp cx, 16
+jl bitsLoop
+
+returnBits:
 ; Epilogue
+inc cx
+mov ax, cx ; Move cx+1 into ax
+pop dx
+pop cx
+pop bx
 mov sp, bp
 pop bp
 ret
@@ -176,9 +204,9 @@ push cx
 ; Main
 mov ax, [bp+4]
 push ax
-; TODO
-; call necessarybits
-mov bx, 16 ; THIS SHOULD BE AX
+
+call necessarybits
+mov bx, ax
 mov cx, 16
 sub cx, bx
 pop ax ; AX holds the input number, bx holds the number of bits required to display it, cx holds the number of unnecessary bits
@@ -213,13 +241,13 @@ push ax
 push cx
 ; Main
 mov ax, [bp+4]
-mov cx, 5 ; Loop number ((Necessarybits+1)/3)
+mov cx, 5 ; Max number of octal digits for 15-bit int (after sign bit gets extracted)
 or ax, ax ; Loads sign bit into SF
 jge octalPositive ; Jumps if positive (Don't print negative symbol, still disregard sign bit)
 prtChar '-'
 neg ax ; Make ax positive
 octalPositive:
-shl ax, 1
+shl ax, 1 ; Removing sign bit from the left
 octalPrinter:
   push cx
   push ax
@@ -242,7 +270,6 @@ printOctal endp
 
 
 proc printHex
-;; TODO: Trim leading zeros
 ;; Goes from -7FFF to 7FFF
 ; Prologue
 push bp
