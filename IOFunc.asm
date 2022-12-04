@@ -144,7 +144,7 @@ push dx
 ; Main
 mov ax, [bp+4]
 cmp al, 9
-jl normalDig
+jle normalDig
 add al, 37h ; Convert to ascii letters
 prtChar al
 jmp hexdigitend
