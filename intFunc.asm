@@ -43,7 +43,6 @@ neg bx ; Negate input, that way we don't have to process negative numbers inside
 positive:
 xor cx, cx ; loop counter
 mov dx, 1
-
 cmp bx, 0
 je returnBits
 
@@ -58,7 +57,10 @@ jl bitsLoop
 
 returnBits:
 ; Epilogue
+cmp cx, 16
+jge SixteenBits
 inc cx
+sixteenBits:
 mov ax, cx ; Move cx+1 into ax
 pop dx
 pop cx
@@ -204,7 +206,6 @@ push cx
 ; Main
 mov ax, [bp+4]
 push ax
-
 call necessarybits
 mov bx, ax
 mov cx, 16
