@@ -233,16 +233,18 @@ printBinary endp
 
 
 proc printOctal
-;; TODO: Trim leading zeros
 ; Prologue
 push bp
 mov bp, sp
 push ax
+push bx
 push cx
 ; Main
 mov ax, [bp+4]
+xor bx, bx ; Flag for leading zeros
 mov cx, 5 ; Max number of octal digits for 15-bit int (after sign bit gets extracted)
 or ax, ax ; Loads sign bit into SF
+jz octalZero ; We want to skip the loop if we have all zeros
 jge octalPositive ; Jumps if positive (Don't print negative symbol, still disregard sign bit)
 prtChar '-'
 neg ax ; Make ax positive
@@ -252,20 +254,34 @@ octalPrinter:
   push cx
   push ax
   and ax, 0E000h ; Bitmask for first 3 bits
+  or ax, ax ; Check if ax (first 3 bits) is 0
+  jz octalleadingzeros
+  octalContinue:
+  mov bx, 1 ; Flag that we've scanned a chunk that isn't 0
   mov cl, 13
   shr ax, cl ; Moves bits into least-significant bits
   prtDig al
+  octalSkip:
   pop ax
   mov cl, 3
   shl ax, cl
   pop cx
   loop octalprinter
+octalEpilogue:
 ; Epilogue
 pop cx
+pop bx
 pop ax
 mov sp, bp
 pop bp
 ret
+octalZero:
+  prtChar '0'
+  jmp hexepilogue
+octalLeadingZeros:
+or bx, bx
+jz octalSkip ; If we haven't scanned a non-zero number, skip
+jmp octalContinue ; Else, print the zero
 printOctal endp
 
 
@@ -274,10 +290,15 @@ proc printHex
 ; Prologue
 push bp
 mov bp, sp
+push ax
+push bx
+push cx
 ; Main
-mov ax, [bp+4]
-mov cx, 4 ; Loop number ((Necessarybits+2)/4)
+mov ax, [bp+4] ; Input number
+xor bx, bx ; Clear bx for leading zeros flag
+mov cx, 4 ; Loop number
 or ax, ax ; Loads sign bit into SF
+jz hexZero ; We want to skip the loop if we have all zeros
 jge hexPrinter ; Jumps if positive (Don't print negative symbol, still disregard sign bit)
 prtChar '-'
 neg ax ; Make ax positive
@@ -285,20 +306,36 @@ hexPrinter:
   push cx
   push ax
   and ax, 0F000h ; Bitmask for first 4 bits
+  or ax, ax
+  jz hexLeadingZeros
+  hexContinue:
+  mov bx, 1
   mov cl, 12
   shr ax, cl ; Moves bits into least-significant bits
   push ax ; Pushing ax for process call
   call prtHexDig
-  pop ax ; Clearing stack from process call
+  pop ax ; Clearing process call from stack (add sp, 2)
+  hexSkip:
   pop ax ; Restoring ax from before bitmask
   mov cl, 4 ; Shifting 4 bits left
   shl ax, cl
   pop cx ; Restoring cx for loop counter
   loop hexprinter
+hexEpilogue:
 ; Epilogue
+pop cx
+pop bx
+pop ax
 mov sp, bp
 pop bp
 ret
+hexZero:
+  prtChar '0'
+  jmp hexEpilogue
+hexLeadingZeros:
+or bx, bx
+jz hexskip
+jmp hexContinue
 printHex endp
 
 
