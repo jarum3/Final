@@ -15,6 +15,8 @@ clrScr macro
   pop ax ; Restoring ax
 endm
 
+;; Prints press any key... and waits for a key to be pressed
+;; Just a buffer before things are cleared from the screen.
 pause macro
 
   prtStr pauser
@@ -43,7 +45,7 @@ chgColor macro color
   pop ax
 endm
 
-; Sound I/O interface
+;; Sound I/O interface
 sound macro freq,duration
   ; Prologue
   push ax
@@ -145,11 +147,11 @@ push dx
 mov ax, [bp+4]
 cmp al, 9
 jle normalDig
-add al, 37h ; Convert to ascii letters
+add al, 37h ; Convert to ascii letters (10 -> A, 11 -> B, etc.)
 prtChar al
 jmp hexdigitend
 normalDig:
-prtDig al
+prtDig al ; Uses the macro already created to create a bitmask on al
 ; Epilogue
 hexDigitEnd:
 pop dx

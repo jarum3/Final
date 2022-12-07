@@ -106,6 +106,8 @@ smlArr proc
   ret
 smlArr endp
 
+;; This overflows VERY quickly with large values, since it can only hold up to a 16-bit signed integer.
+;; However, since everything else in the code was a 16-bit signed integer, this was mainly for consistency.
 sumArr proc
 ; Prologue
 push bp
@@ -129,6 +131,7 @@ ret
 sumArr endp
 
 reverseArray proc
+;; Should in-place reverse a given array
 ; Prologue
 push bp
 mov bp, sp
@@ -136,20 +139,20 @@ push ax
 push bx
 push cx
 ; Main
-mov bx, [bp+6]
-mov cx, [bp+4]
+mov bx, [bp+6] ; Move array base index into bx
+mov cx, [bp+4] ; Move array length into cx
 reverseLoop1:
-  mov ax, [bx]
-  push ax
-  add bx, 2
-  loop reverseloop1
-mov cx, [bp+4]
-mov bx, [bp+6]
+  mov ax, [bx] ; Move the value of the current elem into ax
+  push ax ; Push ax to the stack
+  add bx, 2 ; Increment bx one elem
+  loop reverseloop1 ; Loop over entire array
+mov cx, [bp+4] ; Restore length of array
+mov bx, [bp+6] ; Restore base of array
 reverseLoop2:
-  pop ax
-  mov [bx], ax
-  add bx, 2
-  loop reverseLoop2
+  pop ax ; Pop ax (stack is LIFO, last value will be popped first
+  mov [bx], ax ; Move popped value into current elem
+  add bx, 2 ; Increment bx one elem
+  loop reverseLoop2 ; Loop over entire array
 ; Epilogue
 pop cx
 pop bx
@@ -173,14 +176,14 @@ mov bx, [bp+8] ; Base address of source array
 mov cx, [bp+4] ; Length of both arrays
 mov dx, [bp+6] ; Base address of destination array
 copyArrLoop:
-mov ax, [bx]
-push bx
-mov bx, dx
-mov [bx], ax
-pop bx
-add bx, 2
+mov ax, [bx] ; Save value to ax
+push bx ; Push address
+mov bx, dx ; Move destination array into bx (x86 doesn't seem to like using dx for a pointer)
+mov [bx], ax ; Move value from source to destination at same offset
+pop bx ; Return bx
+add bx, 2 ; Increment bx and dx one elem
 add dx, 2
-loop copyArrLoop
+loop copyArrLoop ; Loop over entire array (One length is passed, it goes that many times.
 ; Epilogue
 pop dx
 pop cx
@@ -232,18 +235,18 @@ mov cx, [bp+4] ; Holds length of array
 selectingSort:
 ;; BX holds address of current elem in array (Also base of array to newly sort)
 ;; CX holds length of current array (Decrements 1 every loop)
-  push bx
-  push cx
+  push bx ; Passing current elem addr into smlArr as base
+  push cx ; Passing current length into smlArr (Decrements each loop, shrinking)
   call smlArr ; Loads lowest VALUE into ax and its INDEX into bx (Loops over whole array, nested loop)
-  pop cx
-  mov dx, bx
-  pop bx
-  shl dx, 1
-  add dx, bx
-  push bx
-  push dx
+  pop cx ; Just resetting stack pointer
+  mov dx, bx ; Save index of smallest to dx
+  pop bx ; Restore addr of current elem
+  shl dx, 1 ; Convert index to byte-offset
+  add dx, bx ; Add base pointer to dx, dx = addr of smallest
+  push bx ; Pass bx (Addr of current bottom elem) into swapNUms
+  push dx ; Pass dx (Addr of smallest value in array) into swapNums
   call swapNumsArr ; Swaps current (bottom) elem with memory address of lowest value
-  pop dx
+  pop dx ; Popping dx and bx
   pop bx
   add bx, 2
 loop selectingSort

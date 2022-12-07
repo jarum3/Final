@@ -57,7 +57,7 @@ jl bitsLoop
 returnBits:
 ; Epilogue
 cmp cx, 16
-jge SixteenBits
+jge SixteenBits ; We don't want to increment this if we got 16 (17 bits doesn't make much sense, the above loop doesn't produce anything above 16)
 inc cx
 sixteenBits:
 mov ax, cx ; Move cx+1 into ax
@@ -156,7 +156,7 @@ isPerfectSquare endp
 
 
 proc isNegative
-;; Returns a boolean on whether or not a value on the stack is negative
+;; Returns a boolean on whether or not a value on the stack is negative (Sign bit)
   ; Prologue
   push bp
   mov bp, sp
@@ -196,6 +196,7 @@ isEven endp
 
 
 proc printBinary
+;; Should include the sign bit, regardless of value, and trim leading zeros/1s between the sign bit and the usable part
 ; Prologue
 push bp
 mov bp, sp
@@ -233,6 +234,8 @@ printBinary endp
 
 
 proc printOctal
+;; Should print a minus character before negative numbers, but then present the bits of a positive representation
+;; 8 should be 10, -8 should be -10, etc.
 ; Prologue
 push bp
 mov bp, sp
@@ -340,7 +343,9 @@ printHex endp
 
 
 printDec proc
-; Prints value on stack as a signed decimal integer
+;; Prints value on stack as a signed decimal integer
+;; This is copied primarily from the outdec procedure given in class, but we wanted to
+;; Go through it line-by-line to understand it better, this was before you went through it line by line in class
   ; Prologue
   push bp
   mov bp, sp
@@ -390,6 +395,8 @@ printDec endp
 
 ;; No arguments, returns user input as signed int in ax
 getDec proc
+;; This is copied primarily from the indec procedure given in class, but we wanted to
+;; Go through it line-by-line to understand it better, this was before you went through it line by line in class
   ; Prologue
   push bp
   mov bp, sp
